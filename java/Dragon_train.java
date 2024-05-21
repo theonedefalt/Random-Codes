@@ -39,7 +39,7 @@ class Dragon implements Comparable<Dragon>{
 
     @Override
     public int compareTo(Dragon o) {
-        return Double.compare(o.priority, priority);
+        return Double.compare(o.priority, priority); // comparar prioridades
     }
 }
 
@@ -51,35 +51,44 @@ public class Dragon_train {
         double total_price = 0.0;
         double day_price = 0.0;
         boolean training = false;
-        int current_time = 0;
+        int days_remaining = 0;
+
+        // inserir os dragoes na lista de prioridades
         while (scanner.hasNextLine()) {
             String input = scanner.nextLine();
             String[] splitter = input.split(" ");
             int days_of_training = Integer.parseInt(splitter[0]);
             int much_to_pay = Integer.parseInt(splitter[1]);
             
+            // adicionar novo dragao na lista
             queue.add(new Dragon(days_of_training, much_to_pay));
 
+            // adicionar multa do dragao a multa diaria
             day_price += much_to_pay;
 
-            if (!training || current_time == 0) {
+            // se nao estiver treinando ou esta no primeiro dia, subtrair a multa adicionada anteriormente e aumentar os dias restantes
+            // de treino
+            if (!training || days_remaining == 0) {
                 day_price -= queue.peek().much_to_pay;
-                current_time += queue.peek().days_of_training;
-                queue.poll();
+                days_remaining += queue.peek().days_of_training;
+                queue.poll(); // remover a celula cabeca da fila
                 training = true;
             }
+            // atualizar a multa total
             total_price += day_price;
-            current_time--;
+            days_remaining--; // um dia concluido
         }
 
+        // se algum dragao estiver treinando
         if (training) {
-            total_price += (day_price * current_time);
+            total_price += (day_price * days_remaining); // a multa total sera a multa dia multiplicada pelos dias restantes de treino
         }
 
+        // treinar todos os dragoes restantes
         while (!queue.isEmpty()) {
             day_price -= queue.peek().much_to_pay;
             total_price += (day_price * queue.peek().days_of_training);
-            queue.poll();
+            queue.poll(); // remover a celula cabeca da fila
         }
 
         System.out.printf("%.0f", total_price);
